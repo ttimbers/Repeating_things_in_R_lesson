@@ -7,7 +7,7 @@ Dependencies: R, and gapminder, dplyr & ggplot2 R packages
 
 One major reason for using a scripting language, such as R or Python, for your data 
 analysis is that it makes your more efficient - it is easy once you have written code, to 
-apply it to a new set of data. But how about 10 new sets of data? In this lesson, we're
+apply it to a new set of data. But how about 10 new sets of data? Or 1000? In this lesson, we're
 going to discuss the useful tools and strategies, that are available in R, that will help
 you become more efficient with your data analysis by easily repeating a command or 
 analysis on many things (e.g., datasets). 
