@@ -230,6 +230,7 @@ Classes 'grouped_df', 'tbl_df', 'tbl' and 'data.frame': 1704 obs. of  6 variable
  the example above). This is illustrated below:
  
  ![alt text](dplyr-groupby.png)
+ *kindly borrowed from Software Carpentry's [dplyr lesson](http://swcarpentry.github.io/r-novice-gapminder/13-dplyr.html)*
 
 #### Using `%>%` 
 
