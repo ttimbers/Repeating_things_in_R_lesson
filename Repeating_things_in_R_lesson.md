@@ -342,6 +342,14 @@ opposed to a for loop for many larger, computationally intensive tasks. Again, t
 because it is faster, and as we showed, it's actually less typing - and that means less
 chance you will introduce a bug into your work!
 
+### Taking this further
+
+Once you have a handle on `dplyr`, a good next step is to bring `tidyr` & `broom` into 
+your workflow. These tools will help you make nice clean data frames from your statistical 
+outputs. That means writing beautiful .csv's directly from R, with all your stats 
+(coefficients, p-values, you name it), instead of copying & pasting the model outputs from
+the console. Here are is a resource to get you started with that: https://cran.r-project.org/web/packages/broom/vignettes/broom_and_dplyr.html 
+
 
 Answer:
 
