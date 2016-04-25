@@ -148,12 +148,12 @@ grammar easier to read.
 There are 6 of the most commonly used functions as well as using pipes (%>%) to combine 
 them.
 
-1. select()
-2. filter()
-3. group_by()
-4. summarize()
-5. mutate()
-6. do()
+1. `select()`
+2. `filter()`
+3. `group_by()`
+4. `summarize()`
+5. `mutate()`
+6. `do()`
 
 In this lesson we will focus on `group_by()` and `do()`, as well as pipes (%>%). If you 
 want to learn more about the other dplyr functions, a good place to start is 
