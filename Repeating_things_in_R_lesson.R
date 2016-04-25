@@ -61,7 +61,7 @@ for (country in countries_to_plot) {
 
 library(dplyr)
 
-group_by(gapminder, country) %>% 
+my_plots <- group_by(gapminder, country) %>% 
   do( p = print(plot(x=.$year, y = .$lifeExp, main = .$country[1])))
 
 

@@ -1,5 +1,5 @@
 ##  Repeating things in R study group lesson
-by Tiffany Timbers
+by Tiffany Timbers (with materials borrowed from [Software Carpentry](http://software-carpentry.org/))
 
 Dependencies: R, and gapminder & dplyr R packages
 
@@ -139,3 +139,125 @@ we can just take advantage of them. The one that we will explore today is the pa
 
 
 ### Dplyr for repeating analysis on several datasets
+
+The dplyr package provides a number of very useful functions for manipulating dataframes 
+in a way that will reduce repetition, reduce the probability of making errors, and 
+probably even save you some typing. As an added bonus, you might even find the dplyr 
+grammar easier to read.
+
+There are 6 of the most commonly used functions as well as using pipes (%>%) to combine 
+them.
+
+1. select()
+2. filter()
+3. group_by()
+4. summarize()
+5. mutate()
+6. do()
+
+In this lesson we will focus on `group_by()` and `do()`, as well as pipes (%>%). If you 
+want to learn more about the other dplyr functions, a good place to start is 
+[this](http://swcarpentry.github.io/r-novice-gapminder/13-dplyr.html) Software Carptentry 
+lesson.
+
+The code that we are working towards, which will use `dplyr` to do the same thing as the 
+loop above, is written below. We will take some time to explain each part of it.
+
+~~~
+group_by(gapminder, country) %>% 
+  do(p = print(plot(x = .$year, y = .$lifeExp, main = .$country[1])))
+~~~
+
+#### Using `group_by()` 
+
+The first command we use is `group_by()`. Using this command will create a grouped 
+dataframe (first argument passed to `group_by()`, which is grouped by the unique elements 
+in the specified column (second argument passed to `group_by()`). 
+
+Using `str()`, we can see that when we apply `group_by()` to the data frame, that we get a 
+change in the data frame structure than we previously had.
+
+~~~
+str(gapminder)
+~~~
+
+~~~
+Classes ‘tbl_df’, ‘tbl’ and 'data.frame':	1704 obs. of  6 variables:
+ $ country  : Factor w/ 142 levels "Afghanistan",..: 1 1 1 1 1 1 1 1 1 1 ...
+ $ continent: Factor w/ 5 levels "Africa","Americas",..: 3 3 3 3 3 3 3 3 3 3 ...
+ $ year     : int  1952 1957 1962 1967 1972 1977 1982 1987 1992 1997 ...
+ $ lifeExp  : num  28.8 30.3 32 34 36.1 ...
+ $ pop      : int  8425333 9240934 10267083 11537966 13079460 14880372 12881816 13867957 16317921 22227415 ...
+ $ gdpPercap: num  779 821 853 836 740 ...
+~~~
+
+versus
+
+~~~
+str(gapminder %>% group_by(continent))
+~~~
+
+~~~
+Classes 'grouped_df', 'tbl_df', 'tbl' and 'data.frame': 1704 obs. of  6 variables:
+ $ country  : Factor w/ 142 levels "Afghanistan",..: 1 1 1 1 1 1 1 1 1 1 ...
+ $ year     : int  1952 1957 1962 1967 1972 1977 1982 1987 1992 1997 ...
+ $ pop      : num  8425333 9240934 10267083 11537966 13079460 ...
+ $ continent: Factor w/ 5 levels "Africa","Americas",..: 3 3 3 3 3 3 3 3 3 3 ...
+ $ lifeExp  : num  28.8 30.3 32 34 36.1 ...
+ $ gdpPercap: num  779 821 853 836 740 ...
+ - attr(*, "vars")=List of 1
+  ..$ : symbol continent
+ - attr(*, "drop")= logi TRUE
+ - attr(*, "indices")=List of 5
+  ..$ : int  24 25 26 27 28 29 30 31 32 33 ...
+  ..$ : int  48 49 50 51 52 53 54 55 56 57 ...
+  ..$ : int  0 1 2 3 4 5 6 7 8 9 ...
+  ..$ : int  12 13 14 15 16 17 18 19 20 21 ...
+  ..$ : int  60 61 62 63 64 65 66 67 68 69 ...
+ - attr(*, "group_sizes")= int  624 300 396 360 24
+ - attr(*, "biggest_group_size")= int 624
+ - attr(*, "labels")='data.frame':  5 obs. of  1 variable:
+  ..$ continent: Factor w/ 5 levels "Africa","Americas",..: 1 2 3 4 5
+  ..- attr(*, "vars")=List of 1
+  .. ..$ : symbol continent
+  ..- attr(*, "drop")= logi TRUE
+~~~
+
+ A grouped_df can be thought of as a list where each item in the listis a data.frame which 
+ contains only the rows that correspond to the a particular value continent (at least in 
+ the example above). This is illustrated below:
+ 
+ ![alt text](dplyr-groupby.png)
+
+#### Using `%>%` 
+
+The next new thing we see in our code below is `%>%`:
+
+~~~
+group_by(gapminder, country) %>% 
+  do(p = print(plot(x = .$year, y = .$lifeExp, main = .$country[1])))
+~~~
+
+`%>%` is called a pipe. This command sends the output of the previous command to the 
+input of the next one. It is very commonly used between different `dplyr` commands. 
+ 
+*Fun Fact: There is a good chance you have encountered pipes before in the shell. In R, a 
+pipe symbol is `%>%` while in the shell it is `|` but the concept is the same!* 
+   
+#### Using `do()`
+
+`do()` is a general purpose complement to the specialised `dplyr` manipulation functions 
+(`filter`, `select`, `mutate`, `summarise` and `arrange`). `do()` is used to perform 
+arbitrary computation, and returns either a data frame or arbitrary objects which will be 
+stored in a list. 
+
+*Fun Fact: This can be very useful when working with multiple models because by combining 
+`group_by` & `do()` you can fit models for each group, and then have a data frame or list
+that you can later flexibly extract components with either another `do()` or 
+`summarise()`.*
+
+More documentation and examples of `do()` can be found 
+[here](http://www.inside-r.org/node/230616).
+
+
+
