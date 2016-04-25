@@ -1,7 +1,7 @@
 ##  Repeating things in R study group lesson
 by Tiffany Timbers (with materials borrowed from [Software Carpentry](http://software-carpentry.org/))
 
-Dependencies: R, and gapminder & dplyr R packages
+Dependencies: R, and gapminder, dplyr & ggplot2 R packages
 
 ### Motivation
 
@@ -164,9 +164,11 @@ The code that we are working towards, which will use `dplyr` to do the same thin
 loop above, is written below. We will take some time to explain each part of it.
 
 ~~~
-group_by(gapminder, country) %>% 
-  do(p = print(plot(x = .$year, y = .$lifeExp, main = .$country[1])))
+my_plots <- group_by(gapminder, country) %>% 
+  do(plot(x = .$year, y = .$lifeExp, main = .$country[1]))
 ~~~
+
+* note - running the above code works, but throws an error afterwards, we will explain the reason for that later, and provide a slightly better way to do this.*
 
 #### Using `group_by()` 
 
@@ -234,8 +236,8 @@ Classes 'grouped_df', 'tbl_df', 'tbl' and 'data.frame': 1704 obs. of  6 variable
 The next new thing we see in our code below is `%>%`:
 
 ~~~
-group_by(gapminder, country) %>% 
-  do(p = print(plot(x = .$year, y = .$lifeExp, main = .$country[1])))
+my_plots <- group_by(gapminder, country) %>% 
+  do(plot(x = .$year, y = .$lifeExp, main = .$country[1]))
 ~~~
 
 `%>%` is called a pipe. This command sends the output of the previous command to the 
@@ -258,6 +260,99 @@ that you can later flexibly extract components with either another `do()` or
 
 More documentation and examples of `do()` can be found 
 [here](http://www.inside-r.org/node/230616).
+
+Thus, in the code below, `do()` takes the `gapminder` dataset, which has been grouped by 
+country, and applies the plot command to the `year` and `lifeExp` columns for each 
+country. The `.` before `$year`, `$lifeExp`, and `$country` references the data frame that
+was passed to `do()` via the preceding pipe `%>%`. 
+
+What about the `[1]` after country? Well, there are many records in the column country 
+for the grouped data frame, and there are all the same for each country (because we 
+grouped by country). We only need the one for each country, so we just need to grab the 
+first one.
+
+~~~
+my_plots <- group_by(gapminder, country) %>% 
+  do(plot(x = .$year, y = .$lifeExp, main = .$country[1]))
+~~~
+
+Now, although this code works, and generates all the plots we want, it throws an error: 
+
+~~~
+Error: Results are not data frames at positions: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100, 101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142
+~~~
+
+This is because `do()` is supposed to eturns either a data frame or arbitrary objects 
+which will be stored in a list. So, we can get rid of the error by passing each plot to a 
+plot object and then printing that plot object. 
+
+~~~
+my_plots <- group_by(gapminder, country) %>% 
+  do( p = print(plot(x=.$year, y = .$lifeExp, main = .$country[1])))
+~~~
+
+Although, this isn't particulary useful, because a `NULL` object gets passed into the data 
+frame and we cannot re-plot these objects.
+
+~~~
+my_plots$p[1]
+~~~
+
+~~~
+[[1]]
+NULL
+~~~
+
+A better approach to solve this problem is to use objects that are more `dplyr` friendly,
+for example objects from `ggplot`. Using qplot() from the ggplot2 library, we get a 
+data frame that we can re-call the plots from. And, not only can we index them 
+numerically, we can also do this by country name!
+
+~~~
+library(ggplot2)
+
+my_plots <- group_by(gapminder, country) %>% 
+  do(p = qplot(data = ., x = year, y = lifeExp, main = .$country[1]))
+
+# access plot numerically
+my_plots$p[1]
+
+# or by country name
+my_plots$p[my_plots$country =="Canada"]
+~~~
+
+#### Challenge!
+
+Fit a linear model for each country, where y = lifeExp and x = year. Have the code return
+a data frame where you can access the model for each country by index number or by country 
+name.
+
+Hint: the command to fit a linear model in R is `lm(y ~ x, data = the_data)
+
+### Summary
+
+In this lesson we have reviewed how to:
+
+1. write a for loop in R to apply a command (e.g., plotting) or analysis (e.g., linear models) to many datasets
+
+2. use dplyr to to apply an analysis (e.g., linear model) to many datasets
+
+We also discussed why, in R, it is more advantageous to use a tool, such as dplyr, as 
+opposed to a for loop for many larger, computationally intensive tasks. Again, this is 
+because it is faster, and as we showed, it's actually less typing - and that means less
+chance you will introduce a bug into your work!
+
+
+Answer:
+
+~~~
+my_models <- group_by(gapminder, country) %>% 
+  do(m = lm(lifeExp ~ year, data = .))
+~~~
+
+
+
+
 
 
 

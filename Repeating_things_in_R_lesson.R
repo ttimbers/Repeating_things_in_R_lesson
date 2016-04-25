@@ -61,10 +61,31 @@ for (country in countries_to_plot) {
 
 library(dplyr)
 
+## simpler (even though you get an error)
+my_plots <- group_by(gapminder, country) %>% 
+  do((plot(x=.$year, y = .$lifeExp, main = .$country[1])))
+
+## no error
 my_plots <- group_by(gapminder, country) %>% 
   do( p = print(plot(x=.$year, y = .$lifeExp, main = .$country[1])))
 
+# using ggplot
+my_plots <- group_by(gapminder, country) %>% 
+  do( p = print(qplot(data = ., x=year, y = lifeExp, main = .$country[1])))
 
+my_plots <- group_by(gapminder, country) %>% 
+  do( p = qplot(data = ., x=year, y = lifeExp, main = .$country[1]))
+
+# can access plots with data frame
+
+# numerically
+my_plots$p[1]
+
+# or by country name
+my_plots$p[my_plots$country =="Canada"]
+
+
+# Challenge use dplyr to fit linear models between year & lifeExp for every country, have it returned in an dataframe where you can access it by number or country name
 
 group_by(gapminder, country) %>% do(plot = print(qplot(data=(.), x = lifeExp, y = year)))
 
