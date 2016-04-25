@@ -330,6 +330,13 @@ country name.
 
 Hint: the command to fit a linear model in R is `lm(y ~ x, data = the_data)`
 
+Answer:
+
+~~~
+my_models <- group_by(gapminder, country) %>% 
+  do(m = lm(lifeExp ~ year, data = .))
+~~~
+
 ### Summary
 
 In this lesson we have reviewed how to:
@@ -345,19 +352,50 @@ chance you will introduce a bug into your work!
 
 ### Taking this further
 
-Once you have a handle on `dplyr`, a good next step is to bring `tidyr` & `broom` into 
+Once you have a handle on `dplyr`, a good next step is to bring `tidy()` from the broom package into 
 your workflow. These tools will help you make nice clean data frames from your statistical 
 outputs. That means writing beautiful .csv's directly from R, with all your stats 
 (coefficients, p-values, you name it), instead of copying & pasting the model outputs from
-the console. Here are is a resource to get you started with that: https://cran.r-project.org/web/packages/broom/vignettes/broom_and_dplyr.html 
+the console. 
 
-
-Answer:
+For example, to get the outputs of the linear models we fit above in a nice data frame,
+we wrap `lm()` in the `tidy()` function:
 
 ~~~
+library(broom)
+
 my_models <- group_by(gapminder, country) %>% 
-  do(m = lm(lifeExp ~ year, data = .))
+  do(m = tidy(lm(lifeExp ~ year, data = .)))
+  
+my_models$m[my_models$country == "Canada"]
 ~~~
+
+and now when we look at the output, we get this:
+
+~~~
+[[1]]
+         term     estimate   std.error statistic      p.value
+1 (Intercept) -358.3488923 8.252132349 -43.42501 1.007334e-12
+2        year    0.2188692 0.004168638  52.50378 1.520503e-13
+~~~
+
+instead of this:
+
+~~~
+[[1]]
+
+Call:
+lm(formula = lifeExp ~ year, data = .)
+
+Coefficients:
+(Intercept)         year  
+  -358.3489       0.2189  
+~~~
+
+For more details, see this vignette: https://cran.r-project.org/web/packages/broom/vignettes/broom_and_dplyr.html 
+
+
+
 
 
 
