@@ -323,11 +323,11 @@ my_plots$p[my_plots$country =="Canada"]
 
 #### Challenge!
 
-Fit a linear model for each country, where y = lifeExp and x = year. Have the code return
-a data frame where you can access the model for each country by index number or by country 
-name.
+Fit a linear model for each country, where `y = lifeExp` and `x = year`. Have the code 
+return a data frame where you can access the model for each country by index number or by 
+country name.
 
-Hint: the command to fit a linear model in R is `lm(y ~ x, data = the_data)
+Hint: the command to fit a linear model in R is `lm(y ~ x, data = the_data)`
 
 ### Summary
 
